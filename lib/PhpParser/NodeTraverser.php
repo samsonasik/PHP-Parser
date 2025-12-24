@@ -148,8 +148,14 @@ class NodeTraverser implements NodeTraverserInterface {
 
                 if (null !== $return) {
                     if ($return instanceof Node) {
+                        $originalNodeClass = $subNode::class;
                         $this->ensureReplacementReasonable($subNode, $return);
                         $subNode = $node->$name = $return;
+
+                        // can't no longer leaveNode on this subNode as class node changed
+                        if ($originalNodeClass !== $return::class) {
+                            continue 2;
+                        }
                     } elseif (NodeVisitor::STOP_TRAVERSAL === $return) {
                         $this->stopTraversal = true;
                         break 2;
